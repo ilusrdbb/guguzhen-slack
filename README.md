@@ -1,6 +1,6 @@
 # guguzhen-slack
 
-没做完，这是个半成品，先别用！
+没做完，这是个半成品，先别用！  
 咕咕镇摆烂小工具，自动化出击翻牌许愿日活，支持多账号定时执行  
 请注意由于代码充斥大量神秘正则，每次咕咕镇版本更新后本工具可能会有不可预料的问题，如有问题请停止程序等待更新  
 本项目基于pycharm开发，开发环境为python 3.9  
@@ -29,9 +29,9 @@ python3 slack.py &
 ~~~
 
 ## 如何抓cookie
-打开f12控制台，切换到网络（network）选项卡
-访问[咕咕镇首页](https://www.momozhen.com/fyg_index.php#)
-控制台下方左侧会有一排请求，选择点击第一个，在右侧下拉找到Cookie: xxxxx，把xxxxx粘到yaml配置文件中
+打开f12控制台，切换到网络（network）选项卡  
+访问[咕咕镇首页](https://www.momozhen.com/fyg_index.php#)  
+控制台下方左侧会有一排请求，选择点击第一个，在右侧下拉找到Cookie: xxxxx，把xxxxx粘到yaml配置文件中  
 
 ## QA
 Q:那个slack.db是什么玩意，可以删吗  
