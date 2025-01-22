@@ -1,0 +1,28 @@
+# 配置文件修改后需要重启程序才能生效
+# 登录cookie
+cookie: ''
+# 道具商店
+shop:
+  # 是否每天1星沙兑换10w贝壳
+  sand_to_shell: false
+  # 是否每天1星晶兑换120w贝壳
+  crystal_to_shell: false
+# 许愿池 固定300w贝壳许愿11次
+wish: false
+# 争夺战场
+fight:
+  # 战斗模式 0不战斗直接翻牌 1打野打满 2打人打满
+  battle_mode: 2
+  # 存在透视下的翻牌策略 非透视固定从左往右翻到底
+  # 0 翻到2传说时无脑翻到结束为止
+  # 1 翻到2幸运时无脑追求透视保底
+  flip_card_mode: 1
+  # 使用药水恢复体力次数 0~2次 固定每次用两瓶药水
+  use_potion: 0
+# 定时执行
+scheduler:
+  # 是否开启定时执行
+  enabled: true
+  # 每日执行时分
+  hour: 9
+  minute: 30
