@@ -6,22 +6,22 @@ class BattleData(object):
     def __init__(self, user_setting: dict):
         self.user_setting = user_setting
 
-    def select(self, export_settting: dict):
+    def select(self):
         conn = sqlite3.connect('slack.db')
         cursor = conn.cursor()
         sql = "SELECT * FROM battle_log"
-        if export_settting.get('username'):
+        if self.user_setting.get('username'):
             if "WHERE" not in sql:
                 sql += " WHERE 1=1"
-            sql += f" AND username = '{export_settting.get('username')}'"
-        if export_settting.get('start_date'):
+            sql += f" AND username = '{self.user_setting.get('username')}'"
+        if self.user_setting.get('start_date'):
             if "WHERE" not in sql:
                 sql += " WHERE 1=1"
-            sql += f" AND time >= {export_settting.get('start_date')}"
-        if export_settting.get('end_date'):
+            sql += f" AND time >= {self.user_setting.get('start_date')}"
+        if self.user_setting.get('end_date'):
             if "WHERE" not in sql:
                 sql += " WHERE 1=1"
-            sql += f" AND time <= {export_settting.get('end_date')}"
+            sql += f" AND time <= {self.user_setting.get('end_date')}"
         cursor.execute(sql)
         # 获取字段名
         columns = [column[0] for column in cursor.description]

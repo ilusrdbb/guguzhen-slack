@@ -30,5 +30,5 @@ if __name__ == '__main__':
     # 获取配置
     get_export_setting()
     # 读数据库
-    battle_data = BattleData({}).select(export_setting)
+    battle_data = BattleData(export_setting).select()
     # todo 导出
