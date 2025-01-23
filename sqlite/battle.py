@@ -6,9 +6,33 @@ class BattleData(object):
     def __init__(self, user_setting: dict):
         self.user_setting = user_setting
 
-    def select(self):
-        # todo
-        pass
+    def select(self, export_settting: dict):
+        conn = sqlite3.connect('slack.db')
+        cursor = conn.cursor()
+        sql = "SELECT * FROM battle_log"
+        if export_settting.get('username'):
+            if "WHERE" not in sql:
+                sql += " WHERE 1=1"
+            sql += f" AND username = '{export_settting.get('username')}'"
+        if export_settting.get('start_date'):
+            if "WHERE" not in sql:
+                sql += " WHERE 1=1"
+            sql += f" AND time >= {export_settting.get('start_date')}"
+        if export_settting.get('end_date'):
+            if "WHERE" not in sql:
+                sql += " WHERE 1=1"
+            sql += f" AND time <= {export_settting.get('end_date')}"
+        cursor.execute(sql)
+        # 获取字段名
+        columns = [column[0] for column in cursor.description]
+        # 获取所有行数据
+        rows = cursor.fetchall()
+        # 将每一行数据转换为字典，并添加到列表中
+        result = [dict(zip(columns, row)) for row in rows]
+        cursor.close()
+        conn.commit()
+        conn.close()
+        return result
 
     def insert(self):
         battle_info = self.user_setting["battle"]
