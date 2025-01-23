@@ -1,4 +1,7 @@
+import re
+
 from aiohttp import ClientSession
+from lxml import html
 
 from utils import log, request
 
@@ -29,11 +32,11 @@ class Clip(object):
         # 翻牌id映射
         self.position_map = {
             1: "舞",
-            2: "",
-            3: "",
-            4: "",
-            5: "",
-            6: "",
+            2: "默",
+            3: "琳",
+            4: "艾",
+            5: "梦",
+            6: "薇",
             7: "伊",
             8: "冥",
             9: "命",
@@ -51,26 +54,131 @@ class Clip(object):
 
     async def run(self):
         log.info("开始翻牌...")
-        # todo 获取透视 翻开透视中的传说 刷新clip_info
-
+        # 获取透视
+        refresh_res = await self.refresh()
+        return
+        if not refresh_res:
+            return
+        if self.perspective_list:
+            log.info("获取到透视：" + ",".join(self.perspective_list))
+            # 翻开透视中的传说
+            perspective_index = 1
+            for perspective_card in self.perspective_list:
+                if perspective_card == "传说":
+                    self.param["id"] = perspective_index
+                    await self.clip(False)
+                perspective_index += 1
         # 起始翻牌位置
         self.param["id"] = len(self.perspective_list) + 1
         # 开翻
         await self.clip()
 
-    async def clip(self):
+    async def refresh(self):
+        url = "https://www.momozhen.com/fyg_read.php"
+        param = {
+            "f": "10"
+        }
+        res = await request.post_data(url, self.headers, param, self.session)
+        if res and res.startswith('<div class="row fyg_tc">'):
+            # 获取透视
+            pattern = r'是“(.*?)”</p>'
+            matches = re.findall(pattern, res)
+            if matches:
+                self.perspective_list = matches[0].split(",")
+            else:
+                # 没透视固定从左往右翻
+                self.clip_setting = -1
+            # 刷新翻牌结果
+            if not self.analysis_clip_result(res):
+                log.info("翻牌结果解析失败！结束翻牌")
+                return False
+            # 打印刷新后的翻牌结果
+            print_info = ""
+            for key, value in self.clip_info.items():
+                print_info += f"{key}：{value} "
+                if value > 2:
+                    log.info(f"翻牌结果：{key}")
+                    return False
+            log.info(print_info)
+            return True
+        else:
+            log.info(res)
+            log.info("结束翻牌")
+            return False
+
+    def analysis_clip_result(self, res: str):
+        clip_dom = html.fromstring(res)
+        clip_xpath = "//button[contains(@class,'fyg_lh60')]//text()"
+        read_list = clip_dom.xpath(clip_xpath)
+        if read_list:
+            for item in read_list:
+                if self.clip_info.get(item):
+                    self.clip_info[item] += 1
+            return True
+        return False
+
+    async def clip(self, loop: bool = True):
         res = await request.post_data(self.url, self.headers, self.param, self.session)
-        if res and res.startswith(""):
+        if res and res != "今日已获取奖励":
+            log.info("========" + res)
             log.info("已翻开：" + self.position_map.get(self.param["id"]))
-            # todo 刷新 打印翻牌统计
-            # todo 根据策略判断翻哪张
-            if self.clip_setting == 0:
-                pass
-            if self.clip_setting == 1:
-                pass
-            self.param["id"] = 114514
-            # await self.clip()
+            # 刷新翻牌结果
+            refresh_res = await self.refresh()
+            if not refresh_res or not loop:
+                return
+            # 根据策略判断下张翻哪张
+            self.get_next_id()
+            await self.clip()
         else:
             log.info(res)
             return
+
+    def get_next_id(self):
+        if self.clip_setting == 0:
+            for key, value in self.clip_info.items():
+                # 判断是否有二传说 有就相当于无脑往下翻
+                if key == "传说" and value > 1:
+                    self.param["id"] += 1
+                    return
+                # 2幸运追求保底 但是优先级比2传说低
+                elif key == "幸运" and value > 1:
+                    self.guaranteed()
+                    return
+        elif self.clip_setting == 1:
+            # 2幸运无脑追求保底
+            for key, value in self.clip_info.items():
+                if key == "幸运" and value > 1:
+                    self.guaranteed()
+                    return
+        self.param["id"] += 1
+
+    def guaranteed(self):
+        # 把透视的加进目前已翻出的卡牌中
+        merge_clip_info = {
+            "幸运": self.clip_info["幸运"],
+            "稀有": self.clip_info["稀有"],
+            "史诗": self.clip_info["史诗"],
+            "传说": self.clip_info["传说"]
+        }
+        for perspective in self.perspective_list:
+            merge_clip_info[perspective] += 1
+        # 找出数量大于等于3的利益最大的透视卡
+        guaranteed_key = ""
+        for key, value in merge_clip_info:
+            if value > 2 and key == "史诗":
+                guaranteed_key = key
+                break
+            if value > 2 and key == "稀有":
+                if not guaranteed_key:
+                    guaranteed_key = key
+        # 获取对应透视位置 并翻牌
+        if guaranteed_key:
+            perspective_index = 1
+            for perspective in self.perspective_list:
+                if perspective == guaranteed_key:
+                    self.param["id"] = perspective_index
+                    self.clip(False)
+                perspective_index += 1
+            return
+        self.param["id"] += 1
 

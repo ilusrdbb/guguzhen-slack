@@ -57,13 +57,12 @@ class Battle(object):
         await Clip(self.user_setting, self.session).run()
         # 使用体力药水
         if self.potion_count > 0:
-            use_bool = await self.user_potion()
+            use_bool = await self.use_potion()
             if not use_bool:
                 return
         await self.run()
 
-    async def user_potion(self):
-        # todo 嗑药
+    async def use_potion(self):
         log.info("消耗两瓶药水恢复体力...")
         param = {
             "safeid": self.user_setting["safeid"],
@@ -72,10 +71,10 @@ class Battle(object):
         }
         url = "https://www.momozhen.com/fyg_click.php"
         res = await request.post_data(url, self.headers, param, self.session)
-        if res and res.startswith(""):
+        log.info(res)
+        if res and res.startswith("可出击数已刷新"):
             return True
         else:
-            log.info(res)
             return False
 
     async def battle(self):
@@ -104,6 +103,9 @@ class Battle(object):
             # 打人的记录转换为收割机格式并写数据库
             if self.param["id"] == "2":
                 Analysis(self.user_setting).run()
+            await self.battle()
+        elif "请重试" in res:
+            log.info(res)
             await self.battle()
         else:
             log.info(res)
