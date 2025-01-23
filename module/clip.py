@@ -56,7 +56,6 @@ class Clip(object):
         log.info("开始翻牌...")
         # 获取透视
         refresh_res = await self.refresh()
-        return
         if not refresh_res:
             return
         if self.perspective_list:
@@ -111,16 +110,22 @@ class Clip(object):
         clip_xpath = "//button[contains(@class,'fyg_lh60')]//text()"
         read_list = clip_dom.xpath(clip_xpath)
         if read_list:
+            # 初始化
+            self.clip_info = {
+                "幸运": 0,
+                "稀有": 0,
+                "史诗": 0,
+                "传说": 0
+            }
             for item in read_list:
-                if self.clip_info.get(item):
+                if self.clip_info.get(item) > -1:
                     self.clip_info[item] += 1
             return True
         return False
 
     async def clip(self, loop: bool = True):
         res = await request.post_data(self.url, self.headers, self.param, self.session)
-        if res and res != "今日已获取奖励":
-            log.info("========" + res)
+        if res == "":
             log.info("已翻开：" + self.position_map.get(self.param["id"]))
             # 刷新翻牌结果
             refresh_res = await self.refresh()
@@ -129,6 +134,11 @@ class Clip(object):
             # 根据策略判断下张翻哪张
             self.get_next_id()
             await self.clip()
+        elif res == "该牌面已翻开":
+            if loop:
+                self.get_next_id()
+                await self.clip()
+            return
         else:
             log.info(res)
             return
