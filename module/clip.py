@@ -125,7 +125,7 @@ class Clip(object):
 
     async def clip(self, loop: bool = True):
         res = await request.post_data(self.url, self.headers, self.param, self.session)
-        if res == "":
+        if res == "" or res.startswith('<p class="fyg_f18">'):
             log.info("已翻开：" + self.position_map.get(self.param["id"]))
             # 刷新翻牌结果
             refresh_res = await self.refresh()
