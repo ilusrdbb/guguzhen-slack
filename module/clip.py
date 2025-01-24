@@ -93,9 +93,9 @@ class Clip(object):
                 log.info(self.user_setting["username"] + "翻牌结果解析失败！结束翻牌")
                 return False
             # 打印刷新后的翻牌结果
-            print_info = ""
+            print_info = self.user_setting["username"]
             for key, value in self.clip_info.items():
-                print_info += f"{key}：{value} "
+                print_info += f" {key}：{value}"
                 if value > 2:
                     log.info(f"{self.user_setting['username']}翻牌结束！结果：{key}")
                     return False
