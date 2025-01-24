@@ -6,7 +6,7 @@
 
 ## 使用说明
 ### Windows
-解压release最新版本的压缩包，根据template.yaml修改配置文件，将配置文件复制到config文件夹内，有几个账号就放几个配置文件，配置文件的文件名随意但是后缀名一定要是.yaml，最后双击slack.exe运行程序  
+解压release最新版本的压缩包slack.zip，根据template.yaml修改配置文件，将配置文件复制到config文件夹内，有几个账号就放几个配置文件，配置文件的文件名随意但是后缀名一定要是.yaml，最后双击slack.exe运行程序  
 或使用Pyinstaller从源代码中打包，环境准备见下方Linux说明  
 ~~~bash
 Pyinstaller -F slack.py
@@ -36,7 +36,7 @@ python3 slack.py &
 Q:那个slack.db是什么玩意，可以删吗  
 A:存储战斗记录的数据库，如果不需要导出战斗记录可以删  
 Q:如何导出战斗记录  
-A:使用另一个压缩包内的export.exe，可以导入至收割机脚本中查看  
+A:解压另一个压缩包export.zip，将slack.db放入压缩包内运行export.exe，可以导入至收割机脚本中查看  
 Q:我的沙滩和宝石工坊可以搞自动化么  
 A:纯后端搞这种有些麻烦，建议使用前端脚本（比如光头佬的新数据采集）挂浏览器  
 Q:出击自动切装备护符啥的能做么  
