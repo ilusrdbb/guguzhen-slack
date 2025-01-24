@@ -30,20 +30,6 @@ class Analysis(object):
         BattleData(self.user_setting).insert()
 
     def get_enemy_info(self, log_dom):
-        card_map = {
-            '默': 'MO',
-            '琳': 'LIN',
-            '艾': 'AI',
-            '梦': 'MENG',
-            '薇': 'WEI',
-            '冥': 'MING',
-            '命': 'MIN',
-            '伊': 'YI',
-            '希': 'XI',
-            '舞': 'WU',
-            '霞': 'XIA',
-            '雅': 'YA'
-        }
         result_dict = {}
         info_xpath = "//div[contains(@class,'alert-info')]//span[contains(@class,'fyg_f18')]//text()"
         info_str = log_dom.xpath(info_xpath)
@@ -55,7 +41,7 @@ class Analysis(object):
             return result_dict
         return {
             "enemyname": match.group(1),
-            "char": card_map.get(match.group(2)),
+            "char": match.group(2),
             "charlevel": match.group(3)
         }
 

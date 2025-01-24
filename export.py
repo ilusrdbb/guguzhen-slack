@@ -1,4 +1,5 @@
 import datetime
+import json
 import time
 
 import yaml
@@ -31,4 +32,42 @@ if __name__ == '__main__':
     get_export_setting()
     # 读数据库
     battle_data = BattleData(export_setting).select()
-    # todo 导出
+    for battle in battle_data:
+        battle["damages"] = []
+        battle["invalids"] = []
+        battle["attrs"] = battle["attrs"].split("|")
+        battle["halos"] = battle["halos"].split("|")
+        battle["$types"] = {
+            "attrs": "arrayNonindexKeys",
+            "damages": "arrayNonindexKeys",
+            "halos": "arrayNonindexKeys",
+            "invalids": "arrayNonindexKeys",
+            "time": "date"
+        }
+    # 格式转换
+    export_data = {
+        "formatName": "dexie",
+        "formatVersion": 1,
+        "data": {
+            "databaseName": "ggzharvester2",
+            "databaseVersion": 1,
+            "tables": [
+                {
+                    "name": "battleLog",
+                    "schema": "id,time,username",
+                    "rowCount": len(battle_data)
+                }
+            ],
+            "data": [
+                {
+                    "tableName": "battleLog",
+                    "inbound": True,
+                    "rows": battle_data
+                }
+            ]
+        }
+    }
+    # 导出
+    with open(f"韭菜收割机历史数据{str(time.time() * 1000)}.ggzjson", "a", encoding="utf-8") as f:
+        f.write(json.dumps(export_data))
+    print("Press Enter to exit...")
