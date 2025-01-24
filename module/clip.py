@@ -10,6 +10,7 @@ class Clip(object):
 
     def __init__(self, user_setting: dict, session: ClientSession):
         self.session = session
+        self.user_setting = user_setting
         self.param = {
             "safeid": user_setting["safeid"],
             "c": "8",
@@ -53,13 +54,13 @@ class Clip(object):
         }
 
     async def run(self):
-        log.info("开始翻牌...")
+        log.info(self.user_setting["username"] + "开始翻牌...")
         # 获取透视
         refresh_res = await self.refresh()
         if not refresh_res:
             return
         if self.perspective_list:
-            log.info("获取到透视：" + ",".join(self.perspective_list))
+            log.info(self.user_setting["username"] + "获取到透视：" + ",".join(self.perspective_list))
             # 翻开透视中的传说
             perspective_index = 1
             for perspective_card in self.perspective_list:
@@ -89,20 +90,20 @@ class Clip(object):
                 self.clip_setting = -1
             # 刷新翻牌结果
             if not self.analysis_clip_result(res):
-                log.info("翻牌结果解析失败！结束翻牌")
+                log.info(self.user_setting["username"] + "翻牌结果解析失败！结束翻牌")
                 return False
             # 打印刷新后的翻牌结果
             print_info = ""
             for key, value in self.clip_info.items():
                 print_info += f"{key}：{value} "
                 if value > 2:
-                    log.info(f"翻牌结果：{key}")
+                    log.info(f"{self.user_setting['username']}翻牌结束！结果：{key}")
                     return False
             log.info(print_info)
             return True
         else:
             log.info(res)
-            log.info("结束翻牌")
+            log.info(self.user_setting["username"] + "结束翻牌")
             return False
 
     def analysis_clip_result(self, res: str):
@@ -127,7 +128,7 @@ class Clip(object):
     async def clip(self, loop: bool = True):
         res = await request.post_data(self.url, self.headers, self.param, self.session)
         if res == "" or res.startswith('<p class="fyg_f18">'):
-            log.info("已翻开：" + self.position_map.get(self.param["id"]))
+            log.info(self.user_setting["username"] + "已翻开：" + self.position_map.get(self.param["id"]))
             # 刷新翻牌结果
             refresh_res = await self.refresh()
             if not refresh_res or not loop:

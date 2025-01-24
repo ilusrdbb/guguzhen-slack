@@ -7,6 +7,7 @@ class Wish(object):
 
     def __init__(self, user_setting: dict, session: ClientSession):
         self.session = session
+        self.user_setting = user_setting
         self.wish_setting = user_setting["wish"]
         self.param = {
             "safeid": user_setting["safeid"],
@@ -22,6 +23,6 @@ class Wish(object):
 
     async def run(self):
         if self.wish_setting:
-            log.info("开始许愿...")
+            log.info(self.user_setting["username"] + "开始许愿...")
             res = await request.post_data(self.url, self.headers, self.param, self.session)
             log.info(res)

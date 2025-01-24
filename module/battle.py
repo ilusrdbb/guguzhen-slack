@@ -45,12 +45,12 @@ class Battle(object):
         if self.battle_mode == 1:
             # 打野
             self.param["id"] = "1"
-            log.info("开始打野...")
+            log.info(self.user_setting["username"] + "开始打野...")
             await self.battle()
         if self.battle_mode == 2:
             # 打人
             self.param["id"] = "2"
-            log.info("开始打人...")
+            log.info(self.user_setting["username"] + "开始打人...")
             await self.battle()
         self.battle_count += 1
         # 翻牌
@@ -64,7 +64,7 @@ class Battle(object):
         await self.run()
 
     async def use_potion(self):
-        log.info("消耗两瓶药水恢复体力...")
+        log.info(self.user_setting["username"] + "消耗两瓶药水恢复体力...")
         param = {
             "safeid": self.user_setting["safeid"],
             "c": "13",
@@ -94,13 +94,13 @@ class Battle(object):
             # 获取输赢
             if self.user_setting["username"] + " 获得了胜利！" in res:
                 self.user_setting["battle"]["isWin"] = "true"
-                log.info("赢了")
+                log.info(self.user_setting["username"] + "赢了")
             elif "双方同归于尽！本场不计入胜负场次" in res:
                 self.user_setting["battle"]["isWin"] = "0"
-                log.info("平局")
+                log.info(self.user_setting["username"] + "平局")
             else:
                 self.user_setting["battle"]["isWin"] = "false"
-                log.info("输了")
+                log.info(self.user_setting["username"] + "输了")
             # 打人的记录转换为收割机格式并写数据库
             if self.param["id"] == "2":
                 Analysis(self.user_setting).run()
@@ -110,7 +110,7 @@ class Battle(object):
             await self.battle()
         else:
             log.info(res)
-            log.info("结束战斗")
+            log.info(self.user_setting["username"] + "结束战斗")
 
     async def get_rank(self):
         url = "https://www.momozhen.com/fyg_read.php"
