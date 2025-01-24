@@ -14,7 +14,6 @@ class Battle(object):
 
     def __init__(self, user_setting: dict, session: ClientSession):
         self.session = session
-        self.battle_count = 0
         self.user_setting = user_setting
         self.param = {
             "safeid": user_setting["safeid"],
@@ -40,8 +39,6 @@ class Battle(object):
             self.potion_count = 2
 
     async def run(self):
-        if self.battle_count > 2:
-            return
         if self.battle_mode == 1:
             # 打野
             self.param["id"] = "1"
@@ -52,7 +49,6 @@ class Battle(object):
             self.param["id"] = "2"
             log.info(self.user_setting["username"] + "开始打人...")
             await self.battle()
-        self.battle_count += 1
         # 翻牌
         await Clip(self.user_setting, self.session).run()
         # 使用体力药水
