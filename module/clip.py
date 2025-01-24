@@ -133,37 +133,38 @@ class Clip(object):
             if not refresh_res or not loop:
                 return
             # 根据策略判断下张翻哪张
-            self.get_next_id()
+            await self.get_next_id()
             await self.clip()
         elif res == "该牌面已翻开":
             if loop:
-                self.get_next_id()
+                await self.get_next_id()
                 await self.clip()
             return
         else:
             log.info(res)
             return
 
-    def get_next_id(self):
+    async def get_next_id(self):
         if self.clip_setting == 0:
             for key, value in self.clip_info.items():
                 # 判断是否有二传说 有就相当于无脑往下翻
                 if key == "传说" and value > 1:
                     self.param["id"] += 1
                     return
-                # 2幸运追求保底 但是优先级比2传说低
-                elif key == "幸运" and value > 1:
-                    self.guaranteed()
+            # 2幸运追求保底 但是优先级比2传说低
+            for key, value in self.clip_info.items():
+                if key == "幸运" and value > 1:
+                    await self.guaranteed()
                     return
         elif self.clip_setting == 1:
             # 2幸运无脑追求保底
             for key, value in self.clip_info.items():
                 if key == "幸运" and value > 1:
-                    self.guaranteed()
+                    await self.guaranteed()
                     return
         self.param["id"] += 1
 
-    def guaranteed(self):
+    async def guaranteed(self):
         # 把透视的加进目前已翻出的卡牌中
         merge_clip_info = {
             "幸运": self.clip_info["幸运"],
@@ -172,10 +173,11 @@ class Clip(object):
             "传说": self.clip_info["传说"]
         }
         for perspective in self.perspective_list:
-            merge_clip_info[perspective] += 1
+            if perspective != "传说":
+                merge_clip_info[perspective] += 1
         # 找出数量大于等于3的利益最大的透视卡
         guaranteed_key = ""
-        for key, value in merge_clip_info:
+        for key, value in merge_clip_info.items():
             if value > 2 and key == "史诗":
                 guaranteed_key = key
                 break
@@ -188,7 +190,7 @@ class Clip(object):
             for perspective in self.perspective_list:
                 if perspective == guaranteed_key:
                     self.param["id"] = perspective_index
-                    self.clip(False)
+                    await self.clip(False)
                 perspective_index += 1
             return
         self.param["id"] += 1
