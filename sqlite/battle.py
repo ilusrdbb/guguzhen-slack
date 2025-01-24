@@ -9,18 +9,12 @@ class BattleData(object):
     def select(self):
         conn = sqlite3.connect('slack.db')
         cursor = conn.cursor()
-        sql = "SELECT * FROM battle_log"
+        sql = "SELECT * FROM battle_log WHERE 1=1"
         if self.user_setting.get('username'):
-            if "WHERE" not in sql:
-                sql += " WHERE 1=1"
             sql += f" AND username = '{self.user_setting.get('username')}'"
         if self.user_setting.get('start_date'):
-            if "WHERE" not in sql:
-                sql += " WHERE 1=1"
             sql += f" AND time >= {self.user_setting.get('start_date')}"
         if self.user_setting.get('end_date'):
-            if "WHERE" not in sql:
-                sql += " WHERE 1=1"
             sql += f" AND time <= {self.user_setting.get('end_date')}"
         cursor.execute(sql)
         # 获取字段名
