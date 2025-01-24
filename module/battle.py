@@ -40,7 +40,7 @@ class Battle(object):
             self.potion_count = 2
 
     async def run(self):
-        if self.battle_count > 2 or self.potion_count < 1:
+        if self.battle_count > 2:
             return
         if self.battle_mode == 1:
             # 打野
@@ -61,7 +61,7 @@ class Battle(object):
             if not use_bool:
                 return
             self.potion_count -= 1
-        await self.run()
+            await self.run()
 
     async def use_potion(self):
         log.info(self.user_setting["username"] + "消耗两瓶药水恢复体力...")
