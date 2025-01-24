@@ -118,8 +118,9 @@ class Clip(object):
                 "传说": 0
             }
             for item in read_list:
-                if self.clip_info.get(item) > -1:
-                    self.clip_info[item] += 1
+                if self.clip_info.get(item) is None:
+                    continue
+                self.clip_info[item] += 1
             return True
         return False
 
