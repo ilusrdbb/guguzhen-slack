@@ -91,9 +91,9 @@ class Battle(object):
         self.user_setting["battle"] = {
             "type": "attack"
         }
+        await self.get_rank()
         res = await request.post_data(self.url, self.headers, self.param, self.session)
         if res and res.startswith('<div class="row">'):
-            await self.get_rank()
             self.user_setting["battle"]["time"] = int(time.time() * 1000)
             # 模拟收割机生成id
             combined_string = res + str(self.user_setting["battle"]["time"])
@@ -112,6 +112,7 @@ class Battle(object):
             # 打人的记录转换为收割机格式并写数据库
             if self.param["id"] == "2":
                 Analysis(self.user_setting).run()
+            await self.get_rank()
             await self.battle()
         elif "请重试" in res:
             log.info(res)
