@@ -9,11 +9,10 @@ from utils import config, log
 
 scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
 loop = asyncio.get_event_loop()
-user_setting = {}
 version = "1.0.0"
 
 
-def run():
+def run(user_setting: dict):
     log.init_log()
     loop.run_until_complete(Process(user_setting).run())
     log.remove_log()
@@ -33,7 +32,8 @@ if __name__ == '__main__':
                 minute=scheduler_setting["minute"],
                 misfire_grace_time=600,
                 coalesce=True,
-                max_instances=1
+                max_instances=1,
+                args=[user_setting]
             )
             scheduler.start()
         else:
