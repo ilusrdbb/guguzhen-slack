@@ -44,21 +44,15 @@ class Battle(object):
         if self.battle_mode == 0:
             return
         if self.battle_mode == 1 or self.battle_mode == 3:
-            if self.battle_mode == 3 and self.dog_card > 2:
-                pass
-            else:
-                # 打野
-                self.param["id"] = "1"
-                log.info(self.user_setting["username"] + "开始打野...")
-                await self.battle()
+            # 打野
+            self.param["id"] = "1"
+            log.info(self.user_setting["username"] + "开始打野...")
+            await self.battle()
         if self.battle_mode == 2 or self.battle_mode == 4:
-            if self.battle_mode == 4 and self.dog_card > 2:
-                pass
-            else:
-                # 打人
-                self.param["id"] = "2"
-                log.info(self.user_setting["username"] + "开始打人...")
-                await self.battle()
+            # 打人
+            self.param["id"] = "2"
+            log.info(self.user_setting["username"] + "开始打人...")
+            await self.battle()
         # 翻牌
         if self.dog_card > 2:
             await Clip(self.user_setting, self.session).run()
@@ -88,6 +82,10 @@ class Battle(object):
             return False
 
     async def battle(self):
+        if self.battle_mode == 3 and self.dog_card > 2:
+            return
+        if self.battle_mode == 4 and self.dog_card > 2:
+            return
         self.user_setting["battle"] = {
             "type": "attack"
         }
