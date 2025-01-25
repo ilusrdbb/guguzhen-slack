@@ -135,4 +135,4 @@ class Battle(object):
         dog_pattern = r'font-weight:700;">(.*?)</span><br>今日获得狗牌'
         dog_matches = re.findall(dog_pattern, res)
         if dog_matches:
-            self.dog_card = int(dog_matches[0].split(" /"))
+            self.dog_card = int(dog_matches[0].split(" /")[0])
