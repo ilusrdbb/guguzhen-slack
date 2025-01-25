@@ -1,5 +1,4 @@
 import asyncio
-import json
 from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.background import BlockingScheduler
