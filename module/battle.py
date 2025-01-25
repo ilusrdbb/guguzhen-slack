@@ -58,6 +58,7 @@ class Battle(object):
                 log.info(self.user_setting["username"] + "开始打人...")
                 await self.battle()
         # 翻牌
+        log.info("=============" + str(self.dog_card))
         if self.dog_card > 2:
             await Clip(self.user_setting, self.session).run()
         else:
@@ -132,6 +133,6 @@ class Battle(object):
         if rank_matches:
             self.user_setting["battle"]["rank"] = rank_matches[0]
         dog_pattern = r'font-weight:700;">(.*?)</span><br>今日获得狗牌'
-        dog_pattern = re.findall(dog_pattern, res)
-        if dog_pattern:
-            self.dog_card = int(rank_matches[0].split(" /"))
+        dog_matches = re.findall(dog_pattern, res)
+        if dog_matches:
+            self.dog_card = int(dog_matches[0].split(" /"))
