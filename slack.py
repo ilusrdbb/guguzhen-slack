@@ -1,4 +1,5 @@
 import asyncio
+import json
 from zoneinfo import ZoneInfo
 
 from apscheduler.schedulers.background import BlockingScheduler
@@ -7,6 +8,7 @@ from core.process import Process
 from sqlite import script
 from utils import config, log
 
+scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
 loop = asyncio.get_event_loop()
 version = "1.0.0"
 
@@ -20,11 +22,11 @@ def run(user_setting: dict):
 if __name__ == '__main__':
     print("Version " + version)
     script.init_db()
+    scheduler_flag = False
     for setting in config.read():
-        user_setting = setting
-        scheduler_setting = user_setting["scheduler"]
+        scheduler_setting = setting["scheduler"]
         if scheduler_setting["enabled"]:
-            scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
+            scheduler_flag = True
             scheduler.add_job(
                 run,
                 "cron",
@@ -33,9 +35,10 @@ if __name__ == '__main__':
                 misfire_grace_time=600,
                 coalesce=True,
                 max_instances=1,
-                args=[user_setting]
+                args=[setting]
             )
-            scheduler.start()
         else:
             run()
+    if scheduler_flag:
+        scheduler.start()
     input("Press Enter to exit...")

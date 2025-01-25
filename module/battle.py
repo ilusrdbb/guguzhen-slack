@@ -58,7 +58,6 @@ class Battle(object):
                 log.info(self.user_setting["username"] + "开始打人...")
                 await self.battle()
         # 翻牌
-        log.info("=============" + str(self.dog_card))
         if self.dog_card > 2:
             await Clip(self.user_setting, self.session).run()
         else:
