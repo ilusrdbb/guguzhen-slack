@@ -27,8 +27,8 @@ class Battle(object):
         self.url = "https://www.momozhen.com/fyg_v_intel.php"
         # battle mode
         self.battle_mode = user_setting["fight"]["battle_mode"]
-        if self.battle_mode < 1:
-            self.battle_mode = 1
+        if self.battle_mode < 0:
+            self.battle_mode = 0
         if self.battle_mode > 4:
             self.battle_mode = 4
         # 使用药水次数
@@ -41,6 +41,8 @@ class Battle(object):
         self.dog_card = 0
 
     async def run(self):
+        if self.battle_mode == 0:
+            return
         if self.battle_mode == 1 or self.battle_mode == 3:
             if self.battle_mode == 3 and self.dog_card > 2:
                 pass

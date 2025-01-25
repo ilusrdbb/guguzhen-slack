@@ -43,3 +43,14 @@ class Shop(object):
             self.param["c"] = "6"
             res = await request.post_data(self.url, self.headers, self.param, self.session)
             log.info(res)
+        if self.shop_setting["sand_to_potion"]:
+            # 买药水
+            await self.buy_potion()
+
+    async def buy_potion(self):
+        log.info(self.user_setting["username"] + "开始购买药水...")
+        self.param["c"] = "7"
+        res = await request.post_data(self.url, self.headers, self.param, self.session)
+        log.info(res)
+        if res and "已获得 体能刺激药水" in res:
+            await self.buy_potion()
