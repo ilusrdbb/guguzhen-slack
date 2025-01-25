@@ -68,6 +68,10 @@ if __name__ == '__main__':
         }
     }
     # 导出
-    with open(f"韭菜收割机历史数据{str(time.time() * 1000)}.ggzjson", "a", encoding="utf-8") as f:
+    if export_setting['username']:
+        file_name = f"韭菜收割机历史数据_{export_setting['username']}_{str(time.time() * 1000)}.ggzjson"
+    else:
+        file_name = f"韭菜收割机历史数据_{str(time.time() * 1000)}.ggzjson"
+    with open(file_name, "a", encoding="utf-8") as f:
         f.write(json.dumps(export_data))
     print("Press Enter to exit...")
