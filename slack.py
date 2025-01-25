@@ -7,7 +7,6 @@ from core.process import Process
 from sqlite import script
 from utils import config, log
 
-scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
 loop = asyncio.get_event_loop()
 version = "1.0.0"
 
@@ -25,6 +24,7 @@ if __name__ == '__main__':
         user_setting = setting
         scheduler_setting = user_setting["scheduler"]
         if scheduler_setting["enabled"]:
+            scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
             scheduler.add_job(
                 run,
                 "cron",
