@@ -27,30 +27,41 @@ class Battle(object):
         self.url = "https://www.momozhen.com/fyg_v_intel.php"
         # battle mode
         self.battle_mode = user_setting["fight"]["battle_mode"]
-        if self.battle_mode < 0:
-            self.battle_mode = 0
-        if self.battle_mode > 2:
-            self.battle_mode = 2
+        if self.battle_mode < 1:
+            self.battle_mode = 1
+        if self.battle_mode > 4:
+            self.battle_mode = 4
         # 使用药水次数
         self.potion_count = user_setting["fight"]["use_potion"]
         if self.potion_count < 0:
             self.potion_count = 0
         if self.potion_count > 2:
             self.potion_count = 2
+        # 狗牌
+        self.dog_card = 0
 
     async def run(self):
-        if self.battle_mode == 1:
-            # 打野
-            self.param["id"] = "1"
-            log.info(self.user_setting["username"] + "开始打野...")
-            await self.battle()
-        if self.battle_mode == 2:
-            # 打人
-            self.param["id"] = "2"
-            log.info(self.user_setting["username"] + "开始打人...")
-            await self.battle()
+        if self.battle_mode == 1 or self.battle_mode == 3:
+            if self.battle_mode == 3 and self.dog_card > 2:
+                pass
+            else:
+                # 打野
+                self.param["id"] = "1"
+                log.info(self.user_setting["username"] + "开始打野...")
+                await self.battle()
+        if self.battle_mode == 2 or self.battle_mode == 4:
+            if self.battle_mode == 4 and self.dog_card > 2:
+                pass
+            else:
+                # 打人
+                self.param["id"] = "2"
+                log.info(self.user_setting["username"] + "开始打人...")
+                await self.battle()
         # 翻牌
-        await Clip(self.user_setting, self.session).run()
+        if self.dog_card > 2:
+            await Clip(self.user_setting, self.session).run()
+        else:
+            log.info(self.user_setting["username"] + "狗牌不足！")
         # 使用体力药水
         if self.potion_count > 0:
             use_bool = await self.use_potion()
@@ -78,10 +89,9 @@ class Battle(object):
         self.user_setting["battle"] = {
             "type": "attack"
         }
-        # 获取当前段位
-        await self.get_rank()
         res = await request.post_data(self.url, self.headers, self.param, self.session)
         if res and res.startswith('<div class="row">'):
+            await self.get_rank()
             self.user_setting["battle"]["time"] = int(time.time() * 1000)
             # 模拟收割机生成id
             combined_string = res + str(self.user_setting["battle"]["time"])
@@ -107,6 +117,7 @@ class Battle(object):
         else:
             log.info(res)
             log.info(self.user_setting["username"] + "结束战斗")
+            await self.get_rank()
 
     async def get_rank(self):
         url = "https://www.momozhen.com/fyg_read.php"
@@ -116,7 +127,11 @@ class Battle(object):
         res = await request.post_data(url, self.headers, param, self.session)
         if not res:
             return
-        pattern = r'font-weight:900;">(.*?)</span><br>当前所在段位'
-        matches = re.findall(pattern, res)
-        if matches:
-            self.user_setting["battle"]["rank"] = matches[0]
+        rank_pattern = r'font-weight:900;">(.*?)</span><br>当前所在段位'
+        rank_matches = re.findall(rank_pattern, res)
+        if rank_matches:
+            self.user_setting["battle"]["rank"] = rank_matches[0]
+        dog_pattern = r'font-weight:700;">(.*?)</span><br>今日获得狗牌'
+        dog_pattern = re.findall(dog_pattern, res)
+        if dog_pattern:
+            self.dog_card = int(rank_matches[0].split(" /"))
