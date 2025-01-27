@@ -37,6 +37,8 @@ if __name__ == '__main__':
         battle["invalids"] = []
         battle["attrs"] = battle["attrs"].split("|")
         battle["halos"] = battle["halos"].split("|")
+        battle["weapon"] = "_void"
+        battle["armor"] = "_void"
         battle["$types"] = {
             "attrs": "arrayNonindexKeys",
             "damages": "arrayNonindexKeys",
@@ -44,6 +46,10 @@ if __name__ == '__main__':
             "invalids": "arrayNonindexKeys",
             "time": "date"
         }
+        if battle["isWin"] == "true":
+            battle["isWin"] = True
+        if battle["isWin"] == "false":
+            battle["isWin"] = False
     # 格式转换
     export_data = {
         "formatName": "dexie",
