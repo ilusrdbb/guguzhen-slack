@@ -9,7 +9,7 @@ from utils import config, log
 
 scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
 loop = asyncio.get_event_loop()
-version = "1.0.0"
+version = "1.0.1"
 
 
 def run(user_setting: dict):
