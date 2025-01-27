@@ -50,6 +50,8 @@ if __name__ == '__main__':
             battle["isWin"] = True
         if battle["isWin"] == "false":
             battle["isWin"] = False
+        if battle["isWin"] == "0":
+            battle["isWin"] = 0
     # 格式转换
     export_data = {
         "formatName": "dexie",
