@@ -37,7 +37,7 @@ if __name__ == '__main__':
                 args=[setting]
             )
         else:
-            run()
+            run(setting)
     if scheduler_flag:
         scheduler.start()
     input("Press Enter to exit...")
