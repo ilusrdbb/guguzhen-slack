@@ -4,19 +4,21 @@ import aiohttp
 from aiohttp import ClientSession
 
 from module.battle import Battle
+from module.factory import Factory
 from module.shop import Shop
 from module.wish import Wish
-from utils import log, request
+from utils import log, request, config
 
 
 class Process(object):
 
     def __init__(self, user_setting: dict):
-        self.user_setting = user_setting
-        self.headers = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
-            "cookie": user_setting["cookie"]
-        }
+        if user_setting:
+            self.user_setting = user_setting
+            self.headers = {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+                "cookie": user_setting["cookie"]
+            }
         self.url = "https://www.momozhen.com/fyg_index.php"
 
     async def run(self):
@@ -29,6 +31,7 @@ class Process(object):
             if not user_bool:
                 log.info("获取用户信息失败！")
                 return
+            log.info(self.user_setting["username"] + " 开始摆烂...")
             await Shop(self.user_setting, session).run()
             await Wish(self.user_setting, session).run()
             await Battle(self.user_setting, session).run()
@@ -49,5 +52,22 @@ class Process(object):
         if not match_username:
             return False
         self.user_setting["username"] = match_username[0]
-        log.info(match_username[0] + " 开始摆烂...")
         return True
+
+    async def factory_run(self):
+        for setting in config.read():
+            self.user_setting = setting
+            self.headers = {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+                "cookie": setting["cookie"]
+            }
+            if not self.user_setting["cookie"] or self.user_setting["factory"] <= 0:
+                continue
+            jar = aiohttp.CookieJar(unsafe=True)
+            conn = aiohttp.TCPConnector(ssl=False)
+            async with aiohttp.ClientSession(connector=conn, trust_env=True, cookie_jar=jar) as session:
+                user_bool = await self.get_user_info(session)
+                if not user_bool:
+                    log.info("获取用户信息失败！")
+                    continue
+                await Factory(self.user_setting, session).run()
