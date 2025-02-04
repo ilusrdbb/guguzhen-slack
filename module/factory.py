@@ -32,7 +32,6 @@ class Factory(object):
         match = re.findall(pattern, res)
         if not match:
             return
-        print("==========" + match[0])
         now_sand = int(match[0])
         # 判断收工
         if now_sand >= self.sand_threshold:
