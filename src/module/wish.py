@@ -1,6 +1,7 @@
 from aiohttp import ClientSession
 
-from utils import log, request
+from src.utils import request, config
+from src.utils.log import log
 
 
 class Wish(object):
@@ -25,4 +26,4 @@ class Wish(object):
         if self.wish_setting:
             log.info(self.user_setting["username"] + "开始许愿...")
             res = await request.post_data(self.url, self.headers, self.param, self.session)
-            log.info(res)
+            log.info(config.format_html(res))

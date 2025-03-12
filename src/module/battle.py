@@ -1,13 +1,13 @@
 import hashlib
 import re
 import time
-import uuid
 
 from aiohttp import ClientSession
 
-from module.analysis import Analysis
-from module.clip import Clip
-from utils import request, log
+from src.module.analysis import Analysis
+from src.module.clip import Clip
+from src.utils import request, config
+from src.utils.log import log
 
 
 class Battle(object):
@@ -98,25 +98,31 @@ class Battle(object):
             self.user_setting["battle"]["id"] = hashlib.md5(combined_string.encode('utf-8')).hexdigest()
             self.user_setting["log"] = res
             # 获取输赢
-            if self.user_setting["username"] + " 获得了胜利！" in res:
+            user_name = self.user_setting["username"]
+            if user_name + " 获得了胜利！" in res:
                 self.user_setting["battle"]["isWin"] = "true"
-                log.info(self.user_setting["username"] + "赢了")
             elif "双方同归于尽！本场不计入胜负场次" in res:
                 self.user_setting["battle"]["isWin"] = "0"
-                log.info(self.user_setting["username"] + "平局")
             else:
                 self.user_setting["battle"]["isWin"] = "false"
-                log.info(self.user_setting["username"] + "输了")
-            # 打人的记录转换为收割机格式并写数据库
-            if self.param["id"] == "2":
-                Analysis(self.user_setting).run()
+            # todo 记录转换为收割机格式并写数据库
+            Analysis(self.user_setting).run()
+            # 打印输赢结果
+            enemy_name = self.user_setting["battle"]["enemyname"]
+            if self.user_setting["battle"]["isWin"] == "true":
+                log.info(user_name + " 赢了 " + enemy_name)
+            elif self.user_setting["battle"]["isWin"] == "0":
+                log.info(user_name + " 平了 " + enemy_name)
+            else:
+                log.info(user_name + " 输了 " + enemy_name)
+            # 刷新段位继续
             await self.get_rank()
             await self.battle()
         elif "请重试" in res:
-            log.info(res)
+            log.info(config.format_html(res))
             await self.battle()
         else:
-            log.info(res)
+            log.info(config.format_html(res))
             log.info(self.user_setting["username"] + "结束战斗")
             await self.get_rank()
 

@@ -3,11 +3,12 @@ import re
 import aiohttp
 from aiohttp import ClientSession
 
-from module.battle import Battle
-from module.factory import Factory
-from module.shop import Shop
-from module.wish import Wish
-from utils import log, request, config
+from src.module.battle import Battle
+from src.module.factory import Factory
+from src.module.shop import Shop
+from src.module.wish import Wish
+from src.utils import request, config
+from src.utils.log import log
 
 
 class Process(object):

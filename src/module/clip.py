@@ -3,7 +3,8 @@ import re
 from aiohttp import ClientSession
 from lxml import html
 
-from utils import log, request
+from src.utils import request
+from src.utils.log import log
 
 
 class Clip(object):

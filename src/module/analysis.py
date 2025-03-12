@@ -2,7 +2,7 @@ import re
 
 from lxml import html
 
-from sqlite.battle import BattleData
+from src.sqlite.battle import BattleData
 
 
 class Analysis(object):
@@ -29,7 +29,8 @@ class Analysis(object):
         # 写库
         BattleData(self.user_setting).insert()
 
-    def get_enemy_info(self, log_dom):
+    @staticmethod
+    def get_enemy_info(log_dom):
         result_dict = {}
         info_xpath = "//div[contains(@class,'alert-info')]//span[contains(@class,'fyg_f18')]//text()"
         info_str = log_dom.xpath(info_xpath)
@@ -45,7 +46,8 @@ class Analysis(object):
             "charlevel": match.group(3)
         }
 
-    def get_gear_list(self, log_dom):
+    @staticmethod
+    def get_gear_list(log_dom):
         gear_map = {
             '探险者短杖': 'STAFF',
             '狂信者的荣誉之刃': 'BLADE',
@@ -95,7 +97,8 @@ class Analysis(object):
         except:
             return ["", "", "", ""]
 
-    def get_halo_list(self, log_dom):
+    @staticmethod
+    def get_halo_list(log_dom):
         result_list = []
         talent_map = {
             '启程之誓': 'SHI',
@@ -144,7 +147,8 @@ class Analysis(object):
                 result_list.append(talent_map.get(halo))
         return result_list
 
-    def get_attr_list(self, log_dom):
+    @staticmethod
+    def get_attr_list(log_dom):
         result_list = []
         attr_xpath = "//div[contains(@class,'alert-info')]/div//span[contains(@class,'label-outline')]//i/@class"
         icon_list = log_dom.xpath(attr_xpath)

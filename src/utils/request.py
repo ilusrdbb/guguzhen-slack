@@ -3,7 +3,7 @@ import random
 
 from aiohttp import ClientSession
 
-from utils import log
+from src.utils.log import log
 
 
 async def get(url: str, headers: dict, session: ClientSession):

@@ -4,7 +4,7 @@ import time
 
 import yaml
 
-from sqlite.battle import BattleData
+from src.sqlite.battle import BattleData
 
 export_setting = {}
 

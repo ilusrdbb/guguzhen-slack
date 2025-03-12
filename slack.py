@@ -1,30 +1,33 @@
 import asyncio
 from zoneinfo import ZoneInfo
 
-from apscheduler.schedulers.background import BlockingScheduler
+from apscheduler.executors.asyncio import AsyncIOExecutor
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from core.process import Process
-from sqlite import script
-from utils import config, log
+from src.core.process import Process
+from src.sqlite import script
+from src.utils import config
+from src.utils.log import log
 
-scheduler = BlockingScheduler(timezone=ZoneInfo("Asia/Shanghai"))
+scheduler = AsyncIOScheduler(
+    timezone=ZoneInfo("Asia/Shanghai"),
+    executors={
+        'asyncio': AsyncIOExecutor()
+    }
+)
 loop = asyncio.get_event_loop()
-version = "1.1.0"
+version = "1.2.0"
 
 
-def run(user_setting: dict):
-    log.init_log()
-    loop.run_until_complete(Process(user_setting).run())
-    log.remove_log()
+async def run(user_setting: dict):
+    await Process(user_setting).run()
 
-def run_factory():
-    log.init_log()
-    loop.run_until_complete(Process(None).factory_run())
-    log.remove_log()
-
+async def run_factory():
+    await Process(None).factory_run()
 
 if __name__ == '__main__':
     print("Version " + version)
+    log.init_log()
     script.init_db()
     scheduler_flag = False
     # 每隔一段时间刷新宝石工坊
@@ -38,7 +41,8 @@ if __name__ == '__main__':
             minutes=20,
             misfire_grace_time=60,
             coalesce=False,
-            max_instances=1
+            max_instances=1,
+            executor='asyncio'
         )
     # 每天其余的定时任务
     for setting in config.read():
@@ -53,11 +57,17 @@ if __name__ == '__main__':
                 misfire_grace_time=600,
                 coalesce=False,
                 max_instances=1,
-                args=[setting]
+                args=[setting],
+                executor='asyncio'
             )
         else:
-            run(setting)
+            asyncio.run(run(setting))
     if scheduler_flag:
-        scheduler.start()
+        # 确保事件循环正确启动
+        try:
+            scheduler.start()
+            asyncio.get_event_loop().run_forever()
+        except (KeyboardInterrupt, SystemExit):
+            pass
     else:
         input("Press Enter to exit...")

@@ -1,6 +1,7 @@
 from aiohttp import ClientSession
 
-from utils import log, request
+from src.utils import request, config
+from src.utils.log import log
 
 
 class Shop(object):
@@ -25,24 +26,24 @@ class Shop(object):
         log.info(self.user_setting["username"] + "开始领取BVIP打卡包...")
         self.param["c"] = "11"
         bvip_res = await request.post_data(self.url, self.headers, self.param, self.session)
-        log.info(bvip_res)
+        log.info(config.format_html(bvip_res))
         # svip日活
         log.info(self.user_setting["username"] + "开始领取SVIP打卡包...")
         self.param["c"] = "12"
         svip_res = await request.post_data(self.url, self.headers, self.param, self.session)
-        log.info(svip_res)
+        log.info(config.format_html(svip_res))
         if self.shop_setting["sand_to_shell"]:
             # 星沙日活
             log.info(self.user_setting["username"] + "开始1星沙兑换10w贝壳...")
             self.param["c"] = "5"
             res = await request.post_data(self.url, self.headers, self.param, self.session)
-            log.info(res)
+            log.info(config.format_html(res))
         if self.shop_setting["crystal_to_shell"]:
             # 星晶日活
             log.info(self.user_setting["username"] + "开始1星晶兑换120w贝壳...")
             self.param["c"] = "6"
             res = await request.post_data(self.url, self.headers, self.param, self.session)
-            log.info(res)
+            log.info(config.format_html(res))
         if self.shop_setting["sand_to_potion"]:
             # 买药水
             await self.buy_potion()
@@ -51,6 +52,6 @@ class Shop(object):
         log.info(self.user_setting["username"] + "开始购买药水...")
         self.param["c"] = "7"
         res = await request.post_data(self.url, self.headers, self.param, self.session)
-        log.info(res)
+        log.info(config.format_html(res))
         if res and "已获得 体能刺激药水" in res:
             await self.buy_potion()

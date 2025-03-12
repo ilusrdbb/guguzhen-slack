@@ -2,7 +2,8 @@ import re
 
 from aiohttp import ClientSession
 
-from utils import request, log
+from src.utils import request, config
+from src.utils.log import log
 
 
 class Factory(object):
@@ -42,7 +43,7 @@ class Factory(object):
                 "c": "30"
             }
             complete_res = await request.post_data(url, self.headers, param, self.session)
-            log.info(complete_res)
+            log.info(config.format_html(complete_res))
             # 收完工立即开工
             if "收工统计" in complete_res:
                 start_res = await request.post_data(url, self.headers, param, self.session)
