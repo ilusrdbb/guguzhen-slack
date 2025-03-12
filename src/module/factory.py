@@ -25,6 +25,8 @@ class Factory(object):
         self.url = "https://www.momozhen.com/fyg_read.php"
 
     async def run(self):
+        # 刷新沙滩
+        await request.get("https://www.momozhen.com/fyg_beach.php", self.headers, self.session)
         # 获取星沙
         res = await request.post_data(self.url, self.headers, self.param, self.session)
         if not res:

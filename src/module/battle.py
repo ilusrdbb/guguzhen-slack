@@ -105,7 +105,7 @@ class Battle(object):
                 self.user_setting["battle"]["isWin"] = "0"
             else:
                 self.user_setting["battle"]["isWin"] = "false"
-            # todo 记录转换为收割机格式并写数据库
+            # 记录转换为收割机格式并写数据库
             Analysis(self.user_setting).run()
             # 打印输赢结果
             enemy_name = self.user_setting["battle"]["enemyname"]

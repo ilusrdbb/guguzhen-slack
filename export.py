@@ -33,19 +33,35 @@ if __name__ == '__main__':
     # 读数据库
     battle_data = BattleData(export_setting).select()
     for battle in battle_data:
-        battle["damages"] = []
+        battle["damages"] = 0
         battle["invalids"] = []
         battle["attrs"] = battle["attrs"].split("|")
         battle["halos"] = battle["halos"].split("|")
-        battle["weapon"] = "_void"
-        battle["armor"] = "_void"
-        battle["$types"] = {
-            "attrs": "arrayNonindexKeys",
-            "damages": "arrayNonindexKeys",
-            "halos": "arrayNonindexKeys",
-            "invalids": "arrayNonindexKeys",
-            "time": "date"
-        }
+        if battle["char"] == "野怪":
+            battle["$types"] = {
+                "armor": "undef",
+                "attrs": "undef",
+                "damages": "undef",
+                "halos": "undef",
+                "invalids": "arrayNonindexKeys",
+                "time": "date",
+                "weapon": "undef"
+            }
+            battle["armor"] = 0
+            battle["attrs"] = 0
+            battle["halos"] = 0
+            battle["weapon"] = 0
+            battle["type"] = "wild"
+        else:
+            battle["$types"] = {
+                "attrs": "arrayNonindexKeys",
+                "damages": "arrayNonindexKeys",
+                "halos": "arrayNonindexKeys",
+                "invalids": "arrayNonindexKeys",
+                "time": "date"
+            }
+            battle["armor"] = "_void"
+            battle["weapon"] = "_void"
         if battle["isWin"] == "true":
             battle["isWin"] = True
         if battle["isWin"] == "false":
