@@ -132,7 +132,8 @@ class Analysis(object):
             '不动如山': 'SHAN',
             '致命节奏': 'ZOU',
             '往返车票': 'PIAO',
-            '天降花盆': 'PEN'
+            '天降花盆': 'PEN',
+            '绝对底线': 'DI'
         }
         halo_xpath = "//div[contains(@class,'alert-info')]/div//div[contains(@class,'fyg_tr')]//text()"
         if not halo_xpath:
