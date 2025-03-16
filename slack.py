@@ -34,7 +34,7 @@ if __name__ == '__main__':
     asyncio.set_event_loop(loop)
     # 每隔一段时间刷新宝石工坊
     for setting in config.read():
-        if setting["factory"] >= 0:
+        if setting["factory"] > 0:
             scheduler_flag = True
     if scheduler_flag:
         scheduler.add_job(
