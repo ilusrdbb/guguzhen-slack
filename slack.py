@@ -65,14 +65,11 @@ if __name__ == '__main__':
         else:
             # 非定时出击 使用统一的事件循环执行任务
             loop.run_until_complete(run(setting))
-    if scheduler_flag:
-        try:
-            scheduler.start()
-            # 使用显式创建的循环
-            loop.run_forever()
-        except Exception as e:
-            log.info(str(e))
-        finally:
-            scheduler.shutdown()
-    else:
-        input("Press Enter to exit...")
+    try:
+        scheduler.start()
+        # 使用显式创建的循环
+        loop.run_forever()
+    except Exception as e:
+        log.info(str(e))
+    finally:
+        scheduler.shutdown()
