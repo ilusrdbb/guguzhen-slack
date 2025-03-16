@@ -15,8 +15,7 @@ scheduler = AsyncIOScheduler(
         'asyncio': AsyncIOExecutor()
     }
 )
-loop = asyncio.get_event_loop()
-version = "1.2.0"
+version = "1.2.1"
 
 
 async def run(user_setting: dict):
@@ -30,6 +29,9 @@ if __name__ == '__main__':
     log.init_log()
     script.init_db()
     scheduler_flag = False
+    # 显式创建并设置事件循环
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     # 每隔一段时间刷新宝石工坊
     for setting in config.read():
         if setting["factory"] >= 0:
@@ -61,13 +63,16 @@ if __name__ == '__main__':
                 executor='asyncio'
             )
         else:
-            asyncio.run(run(setting))
+            # 非定时出击 使用统一的事件循环执行任务
+            loop.run_until_complete(run(setting))
     if scheduler_flag:
-        # 确保事件循环正确启动
         try:
             scheduler.start()
-            asyncio.get_event_loop().run_forever()
-        except (KeyboardInterrupt, SystemExit):
-            pass
+            # 使用显式创建的循环
+            loop.run_forever()
+        except Exception as e:
+            log.info(str(e))
+        finally:
+            scheduler.shutdown()
     else:
         input("Press Enter to exit...")
