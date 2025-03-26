@@ -63,7 +63,7 @@ class Process(object):
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
                 "cookie": setting["cookie"]
             }
-            if not self.user_setting["cookie"] or self.user_setting["factory"] <= 0:
+            if not self.user_setting["cookie"] or self.user_setting["factory"] <= 0 or self.user_setting["renew_key"]:
                 continue
             jar = aiohttp.CookieJar(unsafe=True)
             conn = aiohttp.TCPConnector(ssl=False)
