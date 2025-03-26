@@ -11,14 +11,18 @@ class Renew(object):
         self.user_setting = user_setting
         self.headers = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
-            "cookie": user_setting["cookie"]
+            "cookie": user_setting["cookie"],
+            "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
         }
-        self.url = "https://www.momozhen.com/fyg_llpw.php"
+        self.param = {
+            "iu": "2"
+        }
+        self.url = "https://www.momozhen.com/fyg_llpw_c.php"
 
     async def run(self):
         log.info(self.user_setting["username"] + "开始更新密钥...")
-        res = await request.get(self.url, self.headers, self.session)
-        if res and self.user_setting["username"] in res:
+        res = await request.post_data(self.url, self.headers, self.param, self.session)
+        if res and "ok" in res:
             log.info(self.user_setting["username"] + "更新密钥成功！")
         else:
             log.info(self.user_setting["username"] + "更新密钥失败！")
