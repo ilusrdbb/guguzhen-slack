@@ -15,7 +15,7 @@ scheduler = AsyncIOScheduler(
         'asyncio': AsyncIOExecutor()
     }
 )
-version = "1.2.1"
+version = "1.2.2"
 
 
 async def run(user_setting: dict):
@@ -24,19 +24,22 @@ async def run(user_setting: dict):
 async def run_factory():
     await Process(None).factory_run()
 
+async def run_renew(user_setting: dict):
+    await Process(user_setting).renew_run()
+
 if __name__ == '__main__':
     print("Version " + version)
     log.init_log()
     script.init_db()
-    scheduler_flag = False
+    scheduler_factory_flag = False
     # 显式创建并设置事件循环
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     # 每隔一段时间刷新宝石工坊
     for setting in config.read():
-        if setting["factory"] > 0:
-            scheduler_flag = True
-    if scheduler_flag:
+        if setting["factory"] > 0 and not setting["renew_key"]:
+            scheduler_factory_flag = True
+    if scheduler_factory_flag:
         scheduler.add_job(
             run_factory,
             "interval",
@@ -48,9 +51,22 @@ if __name__ == '__main__':
         )
     # 每天其余的定时任务
     for setting in config.read():
+        if setting["renew_key"]:
+            # 续密钥无视其余操作
+            scheduler.add_job(
+                run_renew,
+                "cron",
+                hour=1,
+                minute=0,
+                misfire_grace_time=60,
+                coalesce=False,
+                max_instances=1,
+                args=[setting],
+                executor='asyncio'
+            )
+            continue
         scheduler_setting = setting["scheduler"]
         if scheduler_setting["enabled"]:
-            scheduler_flag = True
             scheduler.add_job(
                 run,
                 "cron",

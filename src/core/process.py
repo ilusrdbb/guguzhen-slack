@@ -5,6 +5,7 @@ from aiohttp import ClientSession
 
 from src.module.battle import Battle
 from src.module.factory import Factory
+from src.module.renew import Renew
 from src.module.shop import Shop
 from src.module.wish import Wish
 from src.utils import request, config
@@ -72,3 +73,15 @@ class Process(object):
                     log.info("获取用户信息失败！")
                     continue
                 await Factory(self.user_setting, session).run()
+
+    async def renew_run(self):
+        if not self.user_setting["cookie"]:
+            return
+        jar = aiohttp.CookieJar(unsafe=True)
+        conn = aiohttp.TCPConnector(ssl=False)
+        async with aiohttp.ClientSession(connector=conn, trust_env=True, cookie_jar=jar) as session:
+            user_bool = await self.get_user_info(session)
+            if not user_bool:
+                log.info("获取用户信息失败！")
+                return
+            await Renew(self.user_setting, session).run()

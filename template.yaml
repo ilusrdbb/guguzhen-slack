@@ -30,3 +30,5 @@ scheduler:
   # 每日执行时分
   hour: 9
   minute: 30
+# 每天1点自动续密钥 此项开启时其余配置全部失效
+renew_key: false
