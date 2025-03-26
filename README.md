@@ -31,7 +31,7 @@ python3 slack.py &
 打开f12控制台，切换到网络（network）选项卡  
 访问[咕咕镇首页](https://www.momozhen.com/fyg_index.php#)  
 控制台下方左侧会有一排请求，选择点击第一个，在右侧下拉找到Cookie: xxxxx，把xxxxx粘到yaml配置文件中  
-![示例](https://user-images.githubusercontent.com/26247398/423195883-d4b57462-3261-49b5-833c-920e0ab8ad70.png)
+![示例](https://github.com/user-attachments/assets/d4b57462-3261-49b5-833c-920e0ab8ad70)
 
 
 ## 战斗记录导出
